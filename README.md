@@ -12,6 +12,7 @@ A statistical language model is a probability distribution over sequences of wor
 # Requirements
 
 python3
+
 pymorphy2
 
 # How to run
