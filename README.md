@@ -9,11 +9,13 @@ Implementation of the simple IR models:
 
 A statistical language model is a probability distribution over sequences of words. Relevance ranking calculates as a weighted sum of the probability of the request in the docoment and the probability in all documents (I use lambda coefficient to weight them).
 
-#Requirements
+# Requirements
+
 python3
 pymorphy2
 
-#How to run
+# How to run
+
 1) Vector model:
 
 python stat_model.py  [ARTICLE_PATH] [REQUEST_PATH]
