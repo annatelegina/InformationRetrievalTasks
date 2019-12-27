@@ -1,7 +1,7 @@
 import operator
 import math
 import copy
-
+import sys
 import numpy as np
 import pymorphy2
 
@@ -11,24 +11,22 @@ from utils import write_stat
 def main():
 
     #for smoothing
-    epsilon = 1e-4
+    epsilon = float(sys.argv[3])
     morph = pymorphy2.MorphAnalyzer()
 
-    print("ENTER LAMBDA... ")
+    print("===> ENTER LAMBDA... ")
     l = float(input())
     print("===> Request preparing...")
-    req_path = './requests/req_viet.txt'
+    req_path = sys.argv[2]
     f = open(req_path, 'r')
     words = {}
     req = f.read()
     
     f.close()
     req_words = write_stat(req, morph)
-    
-    print("===> Enter the path to the article....")
-    article = input()
-    f = open(article, 'r')
-    
+
+    article = sys.argv[1]
+    f = open(article, 'r') 
     name = article.split('/')[1]
     line = f.read()
     
@@ -88,6 +86,7 @@ def main():
     sorted_d = sorted(result_dict.items(), key=operator.itemgetter(1), reverse=True)
 
     #PRINT RESULTS
+    print("Writing results in", 'res_lambda' + str(l) + '_'+ name+'.txt', " file!")
     gen = open('res_lambda' + str(l) + '_'+ name+'.txt' , 'w')
     for k in sorted_d:
         s = k[0] + ' ' + str(k[1]) + '\n'

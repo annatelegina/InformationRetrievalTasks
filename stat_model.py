@@ -2,8 +2,9 @@ import operator
 import math
 import numpy as np
 import pymorphy2
+import sys
 
-from utils import write_stat, if_idf, if_idf_request
+from utils import write_stat, if_idf, if_idf_request, print_statistics
 
 def check_norm(dic):
     norm = 0.
@@ -26,22 +27,30 @@ def cos_dist(sent, request):
 def main():
     print("With idf? 1 or 0")
     idf = int(input())
+
     print("===> Request preparing...")
-    f = open('./requests/req_viet.txt', 'r')
-    words = {}
-    for i in f:
-        k = i.strip().split()
-        words[k[0]] = float(k[1])
+    f = open(sys.argv[2], 'r')
+    i = f.read()
+    
+    words = {} #request dictionary of words
+    a = "".join(c for c in i if c not in (';','(', ')','!',':', '-', ',', '?', '"', '«','»', '%', '—'))
+    k = a.strip().split()
+    for i in k:
+        if i not in list(words.keys()):
+            words[i] = 1
+        else:
+            words[i] += 1
+        
     f.close()
     keys = list(words.keys())
-    
-    print("===> Enter the path to the article....")
-    article = input()
+
+    article = sys.argv[1]
     f = open(article, 'r')
-    name = article.split('/')[1]
+    name = article.split('/')[2]
     line = f.read()
     line = line.strip().split('.')
     out = []
+    #split article into sentences
     for i in line: 
         a = "".join(c for c in i if c not in (';','(', ')','!',':', '-', ',', '?', '"', '«','»', '%', '—'))
         out.append(a)
@@ -52,8 +61,7 @@ def main():
     if idf:
         d = if_idf(out, morph)
         d_req = if_idf_request(words, out, morph)
-        print(d_req)
-        print(words)
+
         for i in list(words.keys()):
             if i in list(d_req.keys()):
                 a = words[i] * np.log10(num/d_req[i])
@@ -72,7 +80,7 @@ def main():
     for key in list(words.keys()):
         p = words[key]/norm
         words.update({key:p})
-    print(words)
+
     count = 0
     res = {}
     for sent in out:
@@ -110,14 +118,8 @@ def main():
     sorted_d = sorted(res.items(), key=operator.itemgetter(1), reverse=True)
     
     #PRINT RESULTS
-    gen = open('res_idf' + str(idf) + '_'+ name , 'w')
-    for k in sorted_d:
-        se = out[int(k[0])]
-        line = se
-        g = k[1] if not math.isnan(k[1]) else 0.
-        s = line.strip() + ' ' + str(g) + '\n'
-        gen.write(s)
-    gen.close()
+    print("Writing results in", 'res_idf' + str(idf) + '_'+ name + '.txt', " file!")
+    print_statistics('res_idf' + str(idf) + '_'+ name + '.txt', sorted_d, out)
         
         
 if __name__ == "__main__":

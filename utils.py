@@ -1,4 +1,5 @@
 import pymorphy2
+import math
 
 def write_stat(sent, morph):
     words = sent.split()
@@ -45,3 +46,12 @@ def if_idf_request(request, sent, morph):
                     d[word] = 1
                 marked.append(word)
     return d
+
+def print_statistics(name, sorted_d, out):  
+    gen = open(name, 'w')
+    for k in sorted_d:
+        sent = out[int(k[0])]
+        g = k[1] if not math.isnan(k[1]) else 0.
+        s = sent.strip() + ' ' + str(g) + '\n'
+        gen.write(s)
+    gen.close()
